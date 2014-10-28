@@ -15,22 +15,22 @@ public:
   void setAge(int age);
   int getAge() const;
   
-  int getNotoriety() const;
-  void setNotoriety(int notoriety);
+  int getReputation() const;
+  void setReputation(int reputation);
   
   int getWealth() const;
   void setWealth(int wealth);
   
-  void setCountry( Country cntry );
+  void setCountry(Country cntry);
   Country getCountry() const;
   
-  int getStandings( Country cntry ) const;
-  void setStandings( Country cntry );
+  int getStandings(Country cntry) const;
+  void setStandings(Country cntry, int standing);
   
 private:
   std::string mFamilyName;
   int mAge;
-  int mNotoriety;
+  int mReputation;
   int mWealth;
   Country mCountry;
   int mStandings[Country_Count];

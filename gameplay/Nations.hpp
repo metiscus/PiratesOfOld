@@ -1,6 +1,8 @@
 #ifndef NATIONS_HPP_
 #define NATIONS_HPP_
 
+#include <string>
+
 enum Country
 {
   Country_Holland,
@@ -23,13 +25,7 @@ enum Relations
     Relation_Allies  = 100,
 };
 
-class Nations
-{
-public:
-  Nations();
-  
-private:
-  int mRelations[Country_Count][Country_Count];
-};
+std::string gNationNames[Country_Count];
+
 
 #endif // NATIONS_HPP_

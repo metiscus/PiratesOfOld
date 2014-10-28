@@ -5,14 +5,15 @@
 #include "Ship.hpp"
 #include "Nations.hpp"
 #include "Cargo.hpp"
+#include "Date.hpp"
 
 class Scenario
 {
 public:
   
-  
 private:
-  
+    Date   mCurrentDate;
+    Pirate mPirate;
 };
 
 #endif // SCENARIO_HPP_
