@@ -17,6 +17,10 @@ endif()
 # Point to our own cmake modules
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+
+add_subdirectory(lua-5.2.3)
+
 # Find SDL2
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -26,7 +30,7 @@ add_definitions("-Wall")
 include_directories(${SDL2_INCLUDE_DIR})
 
 add_executable(PiratesOfOld 
-  main.cpp 
+  main.cpp
   gameplay/Pirate.cpp
   gameplay/Date.cpp
   gameplay/Territory.cpp
@@ -37,4 +41,4 @@ add_executable(PiratesOfOld
   ui/Screen.cpp
 )
 
-target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES})
+target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} lua)
