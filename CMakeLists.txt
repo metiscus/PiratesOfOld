@@ -18,6 +18,7 @@ endif()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lua-5.2.3/src)
 
 add_subdirectory(lua-5.2.3)
 
@@ -26,7 +27,7 @@ find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 
 # Add global definitions
-add_definitions("-Wall")
+add_definitions("-Wall -Wextra")
 include_directories(${SDL2_INCLUDE_DIR})
 
 add_executable(PiratesOfOld 
@@ -39,6 +40,11 @@ add_executable(PiratesOfOld
   gameplay/Map.cpp
   gameplay/Ship.cpp
   ui/Screen.cpp
+  ui/Window.cpp
+  ui/Button.cpp
 )
+
+## This requires sdl2_ttf library from https://www.libsdl.org/projects/SDL_ttf/
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSDL2_ttf")
 
 target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} lua)

@@ -2,6 +2,7 @@
 #define SCREENDATA_HPP_
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 class ScreenData
 {
@@ -20,10 +21,14 @@ public:
 
   SDL_Window*& getWindow() { return mWindow; }
   SDL_Renderer*& getRenderer() { return mRenderer; }
+  TTF_Font*& getFont() { return mFont; }
+  SDL_Texture*& getTexture() { return mTexture; }
   
 private:
   SDL_Window *mWindow;
   SDL_Renderer *mRenderer;
+  TTF_Font *mFont;
+  SDL_Texture *mTexture;
 };
 
 #endif

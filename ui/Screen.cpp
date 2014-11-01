@@ -11,13 +11,19 @@ Screen::Screen(int width, int height, std::string title)
   , mTitle(title)
   , mData(new ScreenData)
 {
-  mData->getWindow() = SDL_CreateWindow(title.c_str(),
+  mData->getWindow()   = SDL_CreateWindow(title.c_str(),
                             SDL_WINDOWPOS_CENTERED,
                             SDL_WINDOWPOS_CENTERED,
                             width, height, 0);
   
   mData->getRenderer() = SDL_CreateRenderer(mData->getWindow(), -1, SDL_RENDERER_ACCELERATED);
   
+  mData->getFont()     = TTF_OpenFont("DroidSans.ttf", 50);
+  
+  mData->getTexture() = SDL_CreateTexture(mData->getRenderer(),
+                               SDL_PIXELFORMAT_ARGB8888,
+                               SDL_TEXTUREACCESS_STREAMING,
+                               width, height);
 }
 
 int Screen::getWidth() const
@@ -42,14 +48,15 @@ std::shared_ptr<Window> Screen::getRoot()
 
 void Screen::onDraw(float dt)
 {
+  SDL_RenderClear(mData->getRenderer());
+  SDL_RenderPresent(mData->getRenderer()); 
+  
   if(mRoot) {
     mRoot->onDraw( dt, mData );
   }
   
-  fprintf(stderr, "Dt is %7f\r", dt);
-  
-  SDL_RenderClear(mData->getRenderer());
-  SDL_RenderPresent(mData->getRenderer());  
+
+  fprintf(stderr, "Dt is %7f\r", dt); 
 }
 
 void Screen::onClick(int x, int y, int button)
