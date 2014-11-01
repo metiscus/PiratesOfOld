@@ -12,9 +12,15 @@ find_package(OpenGL REQUIRED)
 add_definitions("-Wall")
 include_directories(${SDL2_INCLUDE_DIR})
 
-add_executable(piratesofold 
+add_executable(PiratesOfOld 
   main.cpp 
   gameplay/Pirate.cpp
+  gameplay/Date.cpp
+  gameplay/Territory.cpp
+  gameplay/Nation.cpp
+  gameplay/GameWorld.cpp
+  gameplay/Map.cpp
+  gameplay/Ship.cpp
 )
-install(TARGETS piratesofold DESTINATION bin)
-target_link_libraries(piratesofold ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES})
+
+target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES})

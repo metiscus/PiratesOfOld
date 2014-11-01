@@ -2,13 +2,13 @@
 
 Pirate::Pirate()
 {
-    mFamilyName;
+    mFamilyName = "Roberts";
     mAge = 21;
     mReputation = 1;
     mWealth = 0;
-    mCountry = Country_Holland;
+    mCountry = Nation::Holland;
   
-    for(int ii=0; ii<Country_Count; ++ii)
+    for(int ii=0; ii<Nation::Count; ++ii)
         mStandings[ii] = 0;
 }
 
@@ -52,22 +52,22 @@ void Pirate::setWealth(int wealth)
     mWealth = wealth;
 }
 
-void Pirate::setCountry(Country cntry)
+void Pirate::setCountry(Nation::NationId cntry)
 {
     mCountry = cntry;
 }
 
-Country Pirate::getCountry() const
+Nation::NationId Pirate::getCountry() const
 {
     return mCountry;
 }
 
-int Pirate::getStandings(Country cntry) const
+int Pirate::getStandings(Nation::NationId cntry) const
 {
     return mStandings[cntry];
 }
 
-void Pirate::setStandings(Country cntry, int standing)
+void Pirate::setStandings(Nation::NationId cntry, int standing)
 {
     mStandings[cntry] = standing;
 }
