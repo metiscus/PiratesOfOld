@@ -1,53 +1,43 @@
 #ifndef SHIP_HPP_
 #define SHIP_HPP_
 
-#include "Cargo.hpp"
-
-enum ShipHull
-{
-  ShipHull_Sloop,
-  ShipHull_Barque,
-  ShipHull_WarGalleon,
-  ShipHull_Galleon,
-};
-
-enum ShipType
-{
-  ShipType_Smuggler,
-  ShipType_Merchant,
-  ShipType_Military,
-  ShipType_Treasure,
-};
+#include <string>
 
 class Ship
 {
 public:
+  struct HullInfo
+  {
+    int id;
+    std::string typeName;
+    int maxCannon;
+    int maxSpeed;
+    int maxTurn;
+    int maxCargo;
+    int maxCrew;    
+  };
+  
+  enum Role
+  {
+    Smuggler,
+    Trader,
+    Pirate,
+    PirateHunter,
+    TreasureBoat,
+    WarBoat
+  };
+  
   Ship();
+     
+  const HullInfo& getHullInfo() const;
+  void setHull(HullInfo info);
   
-  static Ship generateTypicalShip( ShipType type );
-  
-  void setHull(ShipHull hull);
-  ShipHull getHull() const;
-  
-  void setType(ShipType type);
-  ShipType getType() const;
-  
-  int getMaxCannon() const;
-  int getMaxSpeed() const;
-  int getMaxTurn() const;
-  int getMaxCargo() const;
-  int getMaxCrew() const;
+  Role getRole() const;
+  void setRole(Role role);
   
 private:
-  ShipHull mHull;
-  ShipType mType;
-  int mMaxCannon;
-  int mMaxSpeed;
-  int mMaxTurn;
-  int mMaxCargo;
-  int mMaxCrew;
-  
-  int mCargo[Cargo_Count];
+  HullInfo mHull;
+  Role mRole;
 };
 
 #endif // SHIP_HPP_

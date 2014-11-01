@@ -1,63 +1,56 @@
 #ifndef TERRITORY_HPP_
 #define TERRITORY_HPP_
 
-#include "Nations.hpp"
+#include "Nation.hpp"
 
 #include <string>
-
-enum TerritoryType
-{
-    TerritoryType_TradingPost,
-    TerritoryType_SmallCity,
-    TerritoryType_LargeCity,
-    TerritoryType_SmallFort,
-    TerritoryType_LargeFort
-};
 
 class Territory
 {
 public:
-    Territory();
+  enum Type
+  {
+    TradingPost,
+    SmallCity,
+    LargeCity,
+    SmallFort,
+    LargeFort
+  };
+  
+  Territory();
     
-    int getId() const;
-    void setId(int id);
-    
-    TerritoryType getType() const;
-    void setType(TerritoryType type);
+  int getId() const;
+  void setId(int id);
+  
+  Type getType() const;
+  void setType(Type type);
 
-    void setName(std::string name);
-    std::string getName() const;
+  void setName(std::string name);
+  std::string getName() const;
 
-    void setLocationX(int x);
-    void setLocationY(int y);
-    int getLocationX() const;
-    int getLocationY() const;
+  void setOwningPower(Nation::NationId owner);
+  Nation::NationId getOwningPower() const;
 
-    void setOwningPower(Country owner);
-    Country getOwningPower() const;
+  int getGarrison() const;
+  void setGarrison(int garrison);
 
-    int getGarrison() const;
-    void setGarrison(int garrison);
-
-    bool getHasShipyard() const;
-    bool getHasFort() const;
-    bool getHasGovernor() const;
-    
-    void setHasShipyard(bool hasShip);
-    void setHasFort(bool hasFort);
-    void setHasGovernor(bool hasGov);
+  bool getHasShipyard() const;
+  bool getHasFort() const;
+  bool getHasGovernor() const;
+  
+  void setHasShipyard(bool hasShip);
+  void setHasFort(bool hasFort);
+  void setHasGovernor(bool hasGov);
 
 private:
-    int mId;
-    std::string mName;
-    int mLocationX;
-    int mLocationY;
-    Country mOwningPower;
-    TerritoryType mType;
-    int mGarrison;
-    bool mHasGovernor;
-    bool mHasFort;
-    bool mHasShipyard;
+  int mId;
+  std::string mName;
+  Nation::NationId mOwningPower;
+  Type mType;
+  int mGarrison;
+  bool mHasGovernor;
+  bool mHasFort;
+  bool mHasShipyard;
 };
 
 #endif

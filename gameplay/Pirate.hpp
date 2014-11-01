@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "Nations.hpp"
+#include "Nation.hpp"
 
 class Pirate
 {
@@ -21,19 +21,19 @@ public:
   int getWealth() const;
   void setWealth(int wealth);
   
-  void setCountry(Country cntry);
-  Country getCountry() const;
+  void setCountry(Nation::NationId cntry);
+  Nation::NationId getCountry() const;
   
-  int getStandings(Country cntry) const;
-  void setStandings(Country cntry, int standing);
+  int getStandings(Nation::NationId cntry) const;
+  void setStandings(Nation::NationId cntry, int standing);
   
 private:
   std::string mFamilyName;
   int mAge;
   int mReputation;
   int mWealth;
-  Country mCountry;
-  int mStandings[Country_Count];
+  Nation::NationId mCountry;
+  int mStandings[Nation::Count];
 };
 
 #endif // PIRATE_HPP_

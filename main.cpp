@@ -1,5 +1,4 @@
-#include "SDL.h"
-
+#include <SDL.h>
 #include <GL/gl.h>
 
 #define WINDOW_WIDTH 800
