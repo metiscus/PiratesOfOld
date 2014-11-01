@@ -1,32 +1,21 @@
 #include <SDL.h>
 #include <GL/gl.h>
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 600
+#include "ui/Screen.hpp"
 
-int main(int argc, char ** argv) {
-  /* Declare window and renderer */
-  SDL_Window * window;
-  SDL_Renderer * renderer;
-
-  /* Initialize SDL */
+int main(int argc, char ** argv) 
+{
   SDL_Init(SDL_INIT_EVERYTHING);
-  window = SDL_CreateWindow("PiratesOfOld",
-                            SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED,
-                            WINDOW_WIDTH, WINDOW_HEIGHT,
-			    0);
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
  
-  /* Main game loop */
+  Screen gameScreen(800, 600, "PiratesOfOld");
+  uint64_t lastTick = SDL_GetTicks();
   while (!SDL_QuitRequested()) {
-    SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
+    uint64_t thisTick = SDL_GetTicks();
+    gameScreen.onDraw( 1.e-3 * (thisTick - lastTick) );
+    lastTick = thisTick;
+    SDL_Delay(15);
   }
 
-  /* Deinitialize everything */
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
   SDL_Quit();
 
   return 0;
