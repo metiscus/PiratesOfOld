@@ -23,7 +23,7 @@ int main(int argc, char ** argv)
   lua_State *lua = luaL_newstate();
   
   Screen gameScreen(1024, 800, "PiratesOfOld");
-  std::shared_ptr<Button> button (new Button(0, 0, 100, 100, "Hello WoRld"));
+  std::shared_ptr<Button> button (new Button(0, 0, 200, 100, "Hello World"));
   gameScreen.setRoot(button);
   
   

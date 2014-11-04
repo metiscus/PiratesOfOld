@@ -2,11 +2,11 @@
 uniform sampler2D Sampler;
 
 in vec2 texCoordOut;
+in vec4 colorOut;
 
 layout(location=0) out vec4 fragColor;
 
 void main()
 {
-  fragColor = texture2D(Sampler, texCoordOut).rgba;
-  //fragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  fragColor = colorOut + texture2D(Sampler, texCoordOut).rgba;
 }

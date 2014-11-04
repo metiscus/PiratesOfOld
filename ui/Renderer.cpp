@@ -51,7 +51,6 @@ Renderer::Renderer(int x, int y, int w, int h, std::string title)
     printf("Failed to initialize GLEW.\n");
   }
   
-  // 
   /*
   glEnable(GL_POINT_SMOOTH);
   glEnable(GL_POINT_SPRITE);
@@ -144,7 +143,7 @@ GLuint Renderer::loadTexture(std::string filename)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(GL_TEXTURE_2D, mCurrentTexture);
     mTextures[filename] = tex;
-    stbi_image_free( ptr );
+    stbi_image_free(ptr);
     
     return tex;
   }
@@ -297,8 +296,7 @@ void Renderer::useProgram(GLuint program)
 	glActiveTexture(GL_TEXTURE0);
 	glBindSampler(0, itr->second.sampler);
 	glUniform1i(itr->second.samplerUniform, 0);
-	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0., 1., 0.f));
-	//glm::mat4 projectionMatrix = glm::ortho((float)-mWidth, (float)mWidth, (float)-mHeight, (float)mHeight, (float)-10., (float)10.);
+
 	glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0, 0, -1.0), glm::vec3(0, 0, 1.0), glm::vec3(0., -1., 0.f));
 	viewMatrix = glm::inverse(viewMatrix);
 	glm::mat4 projectionMatrix = glm::ortho((float)-mWidth/2.f, (float)mWidth/2.f, (float)-0.5*mHeight, (float)0.5*mHeight, (float)-10., (float)10.);
@@ -423,6 +421,7 @@ void Renderer::drawPoint(const Vertex& point)
 {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, &(point.x));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, &(point.s));
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 0, &(point.r));
   glDrawArrays(GL_POINTS, 0, 1);
 }
 
@@ -430,6 +429,7 @@ void Renderer::drawPoints( const std::vector<Vertex>& points )
 {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(points[0].x));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(points[0].s));
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(points[0].r));
   glDrawArrays(GL_POINTS, 0, points.size());
 }
 
@@ -437,6 +437,7 @@ void Renderer::drawLine(const LineInfo& line)
 {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(line.from.x));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(line.from.s));
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(line.from.r));
   glDrawArrays(GL_LINES, 0, 2);
 }
 
@@ -444,6 +445,7 @@ void Renderer::drawLines(const std::vector<LineInfo>& lines)
 {
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(lines[0].from.x));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(lines[0].from.s));
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(lines[0].from.r));
   glDrawArrays(GL_LINES, 0, lines.size());
 }
 
@@ -460,6 +462,7 @@ void Renderer::drawQuad(const QuadInfo& quad)
   
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].x));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].s));
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].r));
   glDrawArrays(GL_TRIANGLES, 0, drawData.size());
 }
 
@@ -469,17 +472,29 @@ void Renderer::drawQuads(const std::vector<QuadInfo>& quads)
 
   for(auto itr=quads.begin(); itr!=quads.end(); ++itr) {
     const QuadInfo &quad = *itr;
+    Vertex baseVertex = quad.from;
+    baseVertex.x = quad.from.x;
+    baseVertex.y = quad.to.y;
+    baseVertex.z = quad.from.z;
+    baseVertex.s = quad.from.s;
+    baseVertex.t = quad.to.t;
     drawData.push_back(quad.from);
     drawData.push_back(quad.to);
-    drawData.push_back(Vertex(quad.from.x, quad.to.y, quad.from.z, quad.from.s, quad.to.t));
+    drawData.push_back(baseVertex);
   
+    baseVertex.x = quad.to.x;
+    baseVertex.y = quad.from.y;
+    baseVertex.z = quad.from.z;
+    baseVertex.s = quad.to.s;
+    baseVertex.t = quad.from.t;
     drawData.push_back(quad.from);
-    drawData.push_back(Vertex(quad.to.x, quad.from.y, quad.from.z, quad.to.s, quad.from.t));
+    drawData.push_back(baseVertex);
     drawData.push_back(quad.to);
   }
   
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].x));
   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].s));
+  glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].r));
   glDrawArrays(GL_TRIANGLES, 0, drawData.size());
 }
 
@@ -493,25 +508,20 @@ void Renderer::drawText(GLuint font, const Vertex& start, const std::string& tex
   
   // generate a quad for each font
   Vertex cursor = start;
+  cursor.y += 8;
   std::vector<QuadInfo> textQuads;
   
-#if 1
   for(int ii=0; ii<text.length(); ++ii)
   {
     QuadInfo letter;
-    //const stbtt_bakedchar &glyph = fntInfo.chars.find((*itr))->second;
+
     letter.from = cursor;
-/*      letter.to.x = cursor.x + glyph.xoff;
-    letter.to.y = cursor.y + glyph.yoff;
-    letter.from.s = (glyph.x0 / fntInfo.textureSize);
-    letter.from.t = (glyph.y0 / fntInfo.textureSize);
-    letter.to.s = (glyph.x1 / fntInfo.textureSize);
-    letter.to.t = (glyph.y1 / fntInfo.textureSize);
-*/
+    letter.to = cursor;
+    
     stbtt_aligned_quad quad;
-    fprintf(stderr, "%c %f $%f => ", text[ii], cursor.x, cursor.y);
+    //fprintf(stderr, "%c %f $%f => ", text[ii], cursor.x, cursor.y);
     stbtt_GetBakedQuad(fntInfo.chars, 512, 512, ((int)text[ii]) - 32, &(cursor.x), &(cursor.y), &quad, 1);
-    fprintf(stderr, "%f $%f\n", cursor.x, cursor.y);
+    //fprintf(stderr, "%f $%f\n", cursor.x, cursor.y);
     letter.from.s = quad.s0;
     letter.from.t = quad.t0;
     letter.from.x = quad.x0;
@@ -525,12 +535,7 @@ void Renderer::drawText(GLuint font, const Vertex& start, const std::string& tex
     letter.to.z = 0;
     textQuads.push_back(letter);
   }
-#else
-  QuadInfo testQuad;
-  testQuad.from = Vertex(-512.f, -400.f, 0, 0, 0);
-  testQuad.to = Vertex(512.f, 400, 0, 1, 1);
-  textQuads.push_back(testQuad);
-#endif  
+
   enableTexturing();
   glBindTexture(GL_TEXTURE_2D, fntInfo.texture);
   drawQuads(textQuads);
@@ -542,6 +547,7 @@ void Renderer::begin()
   SDL_GL_MakeCurrent(mWindow, mContext);
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(2);
+  glEnableVertexAttribArray(3);
 }
 
 void Renderer::end()
@@ -549,4 +555,5 @@ void Renderer::end()
   SDL_GL_SwapWindow(mWindow);
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(2);
+  glDisableVertexAttribArray(3);
 }

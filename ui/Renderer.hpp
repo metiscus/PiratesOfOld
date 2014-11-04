@@ -15,19 +15,23 @@
 struct Vertex
 {
   Vertex()
-  : s(0.f), t(0.f), x(0.f), y(0.f), z(0.f) { }
+  : s(0.f), t(0.f), x(0.f), y(0.f), z(0.f), r(0.f), g(0.f), b(0.f), a(0.f) { }
   
   Vertex(GLfloat _x, GLfloat _y, GLfloat _z)
-    : x(_x), y(_y), z(_z){ }
+    : x(_x), y(_y), z(_z), r(0.f), g(0.f), b(0.f), a(0.f) { }
   
   Vertex(GLfloat _x, GLfloat _y, GLfloat _z, GLfloat _s, GLfloat _t)
-    : s(_s), t(_t), x(_x), y(_y), z(_z) { }
+    : s(_s), t(_t), x(_x), y(_y), z(_z), r(0.f), g(0.f), b(0.f), a(0.f) { }
     
   GLfloat s;
   GLfloat t;
   GLfloat x;
   GLfloat y;
   GLfloat z;
+  GLfloat r;
+  GLfloat g;
+  GLfloat b;
+  GLfloat a;
 };
 
 struct LineInfo 

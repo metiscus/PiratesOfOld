@@ -25,7 +25,7 @@ Screen::Screen(int width, int height, std::string title)
   myRenderer->addShader(program, vshader);
   myRenderer->linkProgram(program);
   myRenderer->useProgram(program);
-  myRenderer->clearColor( 0.5, 0.5, 0.5, 0.1 );
+  myRenderer->clearColor(0.5, 0.5, 0.5, 0.1);
   myRenderer->enableBlending();
   myRenderer->enableTexturing();
 
