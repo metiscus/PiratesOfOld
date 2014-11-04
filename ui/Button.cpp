@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include <SDL_ttf.h>
+//#include <SDL_ttf.h>
 
 #include "Button.hpp"
 #include "ScreenData.hpp"
@@ -14,6 +14,7 @@ Button::Button(int x, int y, int width, int height, const std::string& text )
 
 void Button::onDraw( float dt, std::shared_ptr<ScreenData> data )
 {
+  /*
   SDL_Color TXT_Color;
   if( mIsPressed )
   {
@@ -39,6 +40,7 @@ void Button::onDraw( float dt, std::shared_ptr<ScreenData> data )
   SDL_UpdateTexture(button, &dest, textMsg->pixels, textMsg->pitch);
   SDL_FreeSurface(textMsg);
   SDL_DestroyTexture(button);
+  */
 }
 
 bool Button::onClick( int x, int y, int button )

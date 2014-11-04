@@ -41,6 +41,8 @@ add_executable(PiratesOfOld
   gameplay/GameWorld.cpp
   gameplay/Map.cpp
   gameplay/Ship.cpp
+  ui/stb/stb_truetype.cpp
+  ui/stb/stb_image.cpp
   ui/Screen.cpp
   ui/Window.cpp
   ui/Button.cpp

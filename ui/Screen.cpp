@@ -18,7 +18,7 @@ Screen::Screen(int width, int height, std::string title)
   
   mData->getRenderer() = SDL_CreateRenderer(mData->getWindow(), -1, SDL_RENDERER_ACCELERATED);
   
-  mData->getFont()     = TTF_OpenFont("DroidSans.ttf", 50);
+  //mData->getFont()     = TTF_OpenFont("DroidSans.ttf", 50);
   
   mData->getTexture() = SDL_CreateTexture(mData->getRenderer(),
                                SDL_PIXELFORMAT_ARGB8888,

@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include <SDL_ttf.h>
+//#include <SDL_ttf.h>
 #include <GL/gl.h>
 
 extern "C" {
@@ -14,7 +14,7 @@ extern "C" {
 int main(int argc, char ** argv) 
 {
   SDL_Init(SDL_INIT_EVERYTHING);
-  TTF_Init();
+  //TTF_Init();
   // create the lua state
   lua_State *lua = luaL_newstate();
   
