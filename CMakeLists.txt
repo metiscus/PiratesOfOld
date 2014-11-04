@@ -25,10 +25,12 @@ add_subdirectory(lua-5.2.3)
 # Find SDL2
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
 
 # Add global definitions
 add_definitions("-Wall -Wextra")
 include_directories(${SDL2_INCLUDE_DIR})
+include_directories(${GLEW_INCLUDE_PATH})
 
 add_executable(PiratesOfOld 
   main.cpp
@@ -42,9 +44,10 @@ add_executable(PiratesOfOld
   ui/Screen.cpp
   ui/Window.cpp
   ui/Button.cpp
+  ui/Renderer.cpp
 )
 
 ## This requires sdl2_ttf library from https://www.libsdl.org/projects/SDL_ttf/
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSDL2_ttf")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSDL2_ttf -lGLEW")
 
 target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} lua)
