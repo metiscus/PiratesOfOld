@@ -31,7 +31,6 @@ void Button::onDraw( float dt, std::shared_ptr<ScreenData> data )
   else {
     cursor.r = cursor.g = cursor.b = 1.f;
   }
-  //cursor.x -= (mText.length() * 32.) / 2.;
   data->getRenderer()->drawText(data->getFont(), cursor, mText);
 }
 

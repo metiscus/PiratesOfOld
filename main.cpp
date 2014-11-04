@@ -25,14 +25,21 @@ int main(int argc, char ** argv)
   Screen gameScreen(1024, 800, "PiratesOfOld");
   std::shared_ptr<Button> button (new Button(0, 0, 200, 100, "Hello World"));
   gameScreen.setRoot(button);
-  
+
+  float radius = 100;
+  float theta = 0;
+
+  SDL_GL_SetSwapInterval(1);
   
   uint64_t lastTick = SDL_GetTicks();
   while (!SDL_QuitRequested()) {
     uint64_t thisTick = SDL_GetTicks();
     gameScreen.onDraw( 1.e-3 * (thisTick - lastTick) );
     lastTick = thisTick;
-    SDL_Delay(15);
+
+    //button->setPosition(radius*cos(theta), radius*sin(theta));
+    //theta += 0.008;
+    //SDL_Delay(15);
   }
 
   SDL_Quit();

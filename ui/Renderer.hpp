@@ -11,6 +11,7 @@
 #include <valarray>
 #include "stb/stb_truetype.h"
 
+//tolua_begin
 #pragma pack(push, 1)
 struct Vertex
 {
@@ -104,6 +105,7 @@ public:
   void end();
   
 private:
+//tolua_end    
   SDL_Window* mWindow;
   SDL_GLContext mContext;
   
@@ -137,6 +139,6 @@ private:
   bool    mIsDepthTestEnabled;
   bool    mIsTexturingEnabled;
   GLfloat mClearColor[4];
-};
+};//tolua_export
 
 #endif
