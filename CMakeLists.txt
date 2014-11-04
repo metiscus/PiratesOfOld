@@ -31,6 +31,7 @@ find_package(GLEW REQUIRED)
 add_definitions("-Wall -Wextra")
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_PATH})
+include_directories(glm)
 
 add_executable(PiratesOfOld 
   main.cpp
@@ -48,6 +49,10 @@ add_executable(PiratesOfOld
   ui/Button.cpp
   ui/Renderer.cpp
 )
+
+configure_file(data/default.frag ${CMAKE_CURRENT_BINARY_DIR}/data/default.vert COPYONLY)
+configure_file(data/default.vert ${CMAKE_CURRENT_BINARY_DIR}/data/default.vert COPYONLY)
+configure_file(data/DroidSans.ttf ${CMAKE_CURRENT_BINARY_DIR}/data/DroidSans.ttf COPYONLY)
 
 ## This requires sdl2_ttf library from https://www.libsdl.org/projects/SDL_ttf/
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSDL2_ttf -lGLEW")

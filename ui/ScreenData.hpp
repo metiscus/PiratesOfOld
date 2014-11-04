@@ -1,34 +1,27 @@
 #ifndef SCREENDATA_HPP_
 #define SCREENDATA_HPP_
 
-#include <SDL.h>
-//#include <SDL_ttf.h>
+#include "Renderer.hpp"
 
 class ScreenData
 {
 public:
   ScreenData()
+    : mRenderer(nullptr)
+    , mFont(0)
+    , mProgram(0)
   {
-    mWindow   = nullptr;
-    mRenderer = nullptr;
-  }
-  
-  ~ScreenData()
-  {
-    if(mRenderer) SDL_DestroyRenderer(mRenderer);
-    if(mWindow) SDL_DestroyWindow(mWindow);
   }
 
-  SDL_Window*& getWindow() { return mWindow; }
-  SDL_Renderer*& getRenderer() { return mRenderer; }
-  //TTF_Font*& getFont() { return mFont; }
-  SDL_Texture*& getTexture() { return mTexture; }
+  void setRenderer(std::shared_ptr<Renderer> renderer) { mRenderer = renderer; }
+  std::shared_ptr<Renderer> getRenderer() { return mRenderer; }
+  GLuint& getFont() { return mFont; }
+  GLuint& getProgram() { return mProgram; }
   
 private:
-  SDL_Window *mWindow;
-  SDL_Renderer *mRenderer;
-  //TTF_Font *mFont;
-  SDL_Texture *mTexture;
+  std::shared_ptr<Renderer> mRenderer;
+  GLuint mFont;
+  GLuint mProgram;
 };
 
 #endif

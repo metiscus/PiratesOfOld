@@ -1,22 +1,36 @@
+#include <GL/glew.h>
+#include <GL/gl.h>
+
 #include "Renderer.hpp"
 
+#include <cassert>
 #include <cstdio>
 #include <fstream>
 #include <string>
-#include <GL/glew.h>
-#include <GL/gl.h>
 
 #include "stb/stb_image.h"
 #include "stb/stb_truetype.h"
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+static const std::string sProjectionMatrixUniformName = "ProjMat";
+static const std::string sSamplerUniformName          = "Sampler";
+static const std::string sFragmentLocationName        = "fragColor";
+
 Renderer::Renderer(int x, int y, int w, int h, std::string title)
   : mWindow(nullptr)
+  , mWidth(w)
+  , mHeight(h)  
   , mCurrentProgram(0)
   , mCurrentTexture(0)
   , mIsBlendingEnabled(false)
   , mIsDepthTestEnabled(false)
   , mIsTexturingEnabled(false)
 {
+  fprintf(stderr, "renderer created %p\n", this);
   mClearColor[0] = mClearColor[1] = mClearColor[2] = mClearColor[3] = 0.f;
   
   mWindow = SDL_CreateWindow( title.c_str(), x, y, w, h, SDL_WINDOW_OPENGL );
@@ -28,21 +42,33 @@ Renderer::Renderer(int x, int y, int w, int h, std::string title)
   
   mContext = SDL_GL_CreateContext(mWindow);
   SDL_GL_MakeCurrent(mWindow, mContext);
-  if(!glewInit())
+  SDL_GL_MakeCurrent(mWindow, mContext);
+  SDL_GL_SwapWindow(mWindow);
+
+  glewExperimental = GL_TRUE;
+  if(glewInit() != GLEW_OK)
   {
     printf("Failed to initialize GLEW.\n");
   }
+  
+  // 
+  /*
+  glEnable(GL_POINT_SMOOTH);
+  glEnable(GL_POINT_SPRITE);
+  glTexEnvf(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+  */
 }
 
 Renderer::~Renderer()
 {
-  
+  //\TODO: Write deinitialization code here
 }
  
 void Renderer::enableBlending()
 {
   if(!mIsBlendingEnabled){
     glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     mIsBlendingEnabled = true;
   }
 }
@@ -172,10 +198,12 @@ GLuint Renderer::loadShader(std::string filename, ShaderType type)
   {
     case Shader_Fragment: {
       shader = glCreateShader(GL_FRAGMENT_SHADER);
+      break;
     }
     
     case Shader_Vertex: {
       shader = glCreateShader(GL_VERTEX_SHADER);
+      break;
     }
   }
   
@@ -246,9 +274,15 @@ void Renderer::freeShader(GLuint shader)
 // program functions
 GLuint Renderer::createProgram(std::string name)
 {
-  GLuint program = glCreateProgram();
-  mPrograms[name] = program;
-  return program;
+  ProgramInfo myProgram;
+  myProgram.program = glCreateProgram();
+  glGenSamplers(1, &(myProgram.sampler));
+  glSamplerParameteri(myProgram.sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glSamplerParameteri(myProgram.sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  //glSamplerParameteri(myProgram.sampler, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  
+  mPrograms[name] = myProgram;
+  return myProgram.program;
 }
 
 void Renderer::useProgram(GLuint program)
@@ -257,6 +291,23 @@ void Renderer::useProgram(GLuint program)
   {
     mCurrentProgram = program;
     glUseProgram(program);
+    for(auto itr=mPrograms.begin(); itr!=mPrograms.end(); ++itr)
+    {
+      if(itr->second.program == program) {
+	glActiveTexture(GL_TEXTURE0);
+	glBindSampler(0, itr->second.sampler);
+	glUniform1i(itr->second.samplerUniform, 0);
+	//glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0., 1., 0.f));
+	//glm::mat4 projectionMatrix = glm::ortho((float)-mWidth, (float)mWidth, (float)-mHeight, (float)mHeight, (float)-10., (float)10.);
+	glm::mat4 viewMatrix = glm::lookAt(glm::vec3(0, 0, -1.0), glm::vec3(0, 0, 1.0), glm::vec3(0., -1., 0.f));
+	viewMatrix = glm::inverse(viewMatrix);
+	glm::mat4 projectionMatrix = glm::ortho((float)-mWidth/2.f, (float)mWidth/2.f, (float)-0.5*mHeight, (float)0.5*mHeight, (float)-10., (float)10.);
+	
+	projectionMatrix = projectionMatrix * viewMatrix;
+	glUniformMatrix4fv(itr->second.projMatUniform, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	break;
+      }
+    }
   }
 }
 
@@ -279,6 +330,18 @@ bool Renderer::linkProgram(GLuint program)
     }
     return false;
   }
+  
+  // do a little bit of program setup
+  glUseProgram(program);
+  glBindFragDataLocation(program, 0, sFragmentLocationName.c_str());
+  for(auto itr = mPrograms.begin(); itr!=mPrograms.end(); ++itr)
+  {
+    if(itr->second.program == program) {
+      itr->second.projMatUniform = glGetUniformLocation(program, sProjectionMatrixUniformName.c_str());
+      itr->second.samplerUniform = glGetUniformLocation(program, sSamplerUniformName.c_str());
+      break;
+    }
+  }
   return true;
 }
 
@@ -289,21 +352,23 @@ bool Renderer::addShader(GLuint program, GLuint shader)
 }
 
 // font functions
-GLuint Renderer::createFont(std::string filename)
+GLuint Renderer::loadFont(std::string filename)
 {
   const uint32_t fontBufferSize = 1<<25;
-  uint8_t fontBuffer[fontBufferSize];
+  uint8_t *fontBuffer = (uint8_t*)malloc(fontBufferSize);
   const uint32_t fontTextureSize = 512;
-  const uint32_t fontPixelHeight = 16;
+  const uint32_t fontPixelHeight = 32;
+  const uint32_t firstChar = 32;
   uint8_t fontBitmap[fontTextureSize*fontTextureSize];
   stbtt_fontinfo font;
   
   FILE *fp = fopen(filename.c_str(), "rb");
   if(fp) {
     FontInfo fntInfo;
+    fntInfo.textureSize = (float)fontTextureSize;
     fread(fontBuffer, 1, fontBufferSize, fp);
     stbtt_InitFont(&font, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer,0));
-    stbtt_BakeFontBitmap(fontBuffer, 0, (float)fontPixelHeight, fontBitmap, fontTextureSize, fontTextureSize, 16, fntInfo.sCharCount, fntInfo.chars);
+    stbtt_BakeFontBitmap(fontBuffer, 0, (float)fontPixelHeight, fontBitmap, fontTextureSize, fontTextureSize, firstChar, fntInfo.sCharCount, fntInfo.chars);
     
     // convert the bmp into a texture
     enableTexturing();
@@ -318,9 +383,13 @@ GLuint Renderer::createFont(std::string filename)
 
     // store
     mFonts[filename] = fntInfo;
+    mFontsReverse[fntInfo.texture] = filename;
+
+    free(fontBuffer);
     return fntInfo.texture;
   }
-  
+
+  free(fontBuffer);
   return 0;
 }
 
@@ -343,13 +412,141 @@ void Renderer::freeFont(GLuint font)
     {
       glDeleteTextures(1, &itr->second.texture);
       mFonts.erase(itr);
+      mFontsReverse.erase(mFontsReverse.find(font));
       break;
     }
   }
 }
 
 // Draw functions
-void drawPoint( const Vertex& point );
-void drawLine( const Vertex& from, const Vertex& to );
-void drawQuad( const Vertex& from, const Vertex& to );
-void drawText( GLuint font, const Vertex& start, const std::string& text );
+void Renderer::drawPoint(const Vertex& point)
+{
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, &(point.x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, &(point.s));
+  glDrawArrays(GL_POINTS, 0, 1);
+}
+
+void Renderer::drawPoints( const std::vector<Vertex>& points )
+{
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(points[0].x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(points[0].s));
+  glDrawArrays(GL_POINTS, 0, points.size());
+}
+
+void Renderer::drawLine(const LineInfo& line)
+{
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(line.from.x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(line.from.s));
+  glDrawArrays(GL_LINES, 0, 2);
+}
+
+void Renderer::drawLines(const std::vector<LineInfo>& lines)
+{
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(lines[0].from.x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(lines[0].from.s));
+  glDrawArrays(GL_LINES, 0, lines.size());
+}
+
+void Renderer::drawQuad(const QuadInfo& quad)
+{
+  std::vector<Vertex> drawData;
+  drawData.push_back(quad.from);
+  drawData.push_back(quad.to);
+  drawData.push_back(Vertex(quad.from.x, quad.to.y, quad.from.z, quad.from.s, quad.to.t));
+  
+  drawData.push_back(quad.from);
+  drawData.push_back(Vertex(quad.to.x, quad.from.y, quad.from.z, quad.to.s, quad.from.t));
+  drawData.push_back(quad.to);
+  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].s));
+  glDrawArrays(GL_TRIANGLES, 0, drawData.size());
+}
+
+void Renderer::drawQuads(const std::vector<QuadInfo>& quads)
+{
+  std::vector<Vertex> drawData;
+
+  for(auto itr=quads.begin(); itr!=quads.end(); ++itr) {
+    const QuadInfo &quad = *itr;
+    drawData.push_back(quad.from);
+    drawData.push_back(quad.to);
+    drawData.push_back(Vertex(quad.from.x, quad.to.y, quad.from.z, quad.from.s, quad.to.t));
+  
+    drawData.push_back(quad.from);
+    drawData.push_back(Vertex(quad.to.x, quad.from.y, quad.from.z, quad.to.s, quad.from.t));
+    drawData.push_back(quad.to);
+  }
+  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].x));
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), &(drawData[0].s));
+  glDrawArrays(GL_TRIANGLES, 0, drawData.size());
+}
+
+void Renderer::drawText(GLuint font, const Vertex& start, const std::string& text)
+{
+  assert(mFontsReverse.count(font)>0);
+  assert(mFonts.count(mFontsReverse[font])>0);
+  
+  // find the font
+  FontInfo& fntInfo = mFonts[mFontsReverse[font]];
+  
+  // generate a quad for each font
+  Vertex cursor = start;
+  std::vector<QuadInfo> textQuads;
+  
+#if 1
+  for(int ii=0; ii<text.length(); ++ii)
+  {
+    QuadInfo letter;
+    //const stbtt_bakedchar &glyph = fntInfo.chars.find((*itr))->second;
+    letter.from = cursor;
+/*      letter.to.x = cursor.x + glyph.xoff;
+    letter.to.y = cursor.y + glyph.yoff;
+    letter.from.s = (glyph.x0 / fntInfo.textureSize);
+    letter.from.t = (glyph.y0 / fntInfo.textureSize);
+    letter.to.s = (glyph.x1 / fntInfo.textureSize);
+    letter.to.t = (glyph.y1 / fntInfo.textureSize);
+*/
+    stbtt_aligned_quad quad;
+    fprintf(stderr, "%c %f $%f => ", text[ii], cursor.x, cursor.y);
+    stbtt_GetBakedQuad(fntInfo.chars, 512, 512, ((int)text[ii]) - 32, &(cursor.x), &(cursor.y), &quad, 1);
+    fprintf(stderr, "%f $%f\n", cursor.x, cursor.y);
+    letter.from.s = quad.s0;
+    letter.from.t = quad.t0;
+    letter.from.x = quad.x0;
+    letter.from.y = quad.y0;
+    letter.from.z = 0;
+    
+    letter.to.s = quad.s1;
+    letter.to.t = quad.t1;
+    letter.to.x = quad.x1;
+    letter.to.y = quad.y1;
+    letter.to.z = 0;
+    textQuads.push_back(letter);
+  }
+#else
+  QuadInfo testQuad;
+  testQuad.from = Vertex(-512.f, -400.f, 0, 0, 0);
+  testQuad.to = Vertex(512.f, 400, 0, 1, 1);
+  textQuads.push_back(testQuad);
+#endif  
+  enableTexturing();
+  glBindTexture(GL_TEXTURE_2D, fntInfo.texture);
+  drawQuads(textQuads);
+  glBindTexture(GL_TEXTURE_2D, mCurrentTexture);
+}
+
+void Renderer::begin()
+{
+  SDL_GL_MakeCurrent(mWindow, mContext);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(2);
+}
+
+void Renderer::end()
+{
+  SDL_GL_SwapWindow(mWindow);
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(2);
+}

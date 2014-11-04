@@ -25,6 +25,8 @@ public:
   void onDraw(float dt);
   void onClick(int x, int y, int button);
   void onKeypress(int key);
+
+  std::shared_ptr<ScreenData> _getData() { return mData; }
   
 private:
   int mWidth;

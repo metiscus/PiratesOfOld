@@ -4,18 +4,44 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <SDL.h>
+#include <map>
 #include <unordered_map>
 #include <string>
+#include <vector>
+#include <valarray>
 #include "stb/stb_truetype.h"
 
+#pragma pack(push, 1)
 struct Vertex
 {
+  Vertex()
+  : s(0.f), t(0.f), x(0.f), y(0.f), z(0.f) { }
+  
+  Vertex(GLfloat _x, GLfloat _y, GLfloat _z)
+    : x(_x), y(_y), z(_z){ }
+  
+  Vertex(GLfloat _x, GLfloat _y, GLfloat _z, GLfloat _s, GLfloat _t)
+    : s(_s), t(_t), x(_x), y(_y), z(_z) { }
+    
+  GLfloat s;
+  GLfloat t;
   GLfloat x;
   GLfloat y;
   GLfloat z;
-  GLfloat s;
-  GLfloat t;
 };
+
+struct LineInfo 
+{
+  Vertex from;
+  Vertex to;
+};
+
+struct QuadInfo
+{
+  Vertex from;
+  Vertex to;    
+};
+#pragma pack(pop)
 
 class Renderer
 {
@@ -57,31 +83,49 @@ public:
   bool addShader(GLuint program, GLuint shader);
 
   // font functions
-  GLuint createFont(std::string filename);
+  GLuint loadFont(std::string filename);
   GLuint getFont(std::string filename);
   void freeFont(GLuint font);
   
-  // Draw functions
-  void drawPoint( const Vertex& point );
-  void drawLine( const Vertex& from, const Vertex& to );
-  void drawQuad( const Vertex& from, const Vertex& to );
-  void drawText( GLuint font, const Vertex& start, const std::string& text );
+  // Draw functions  
+  void drawPoint(const Vertex& point);
+  void drawPoints(const std::vector<Vertex>& points);
+  void drawLine(const LineInfo& line);
+  void drawLines(const std::vector<LineInfo>& lines);
+  void drawQuad(const QuadInfo& quad);
+  void drawQuads(const std::vector<QuadInfo>& quads);
+  void drawText(GLuint font, const Vertex& start, const std::string& text);
+  
+  void begin();
+  void end();
   
 private:
   SDL_Window* mWindow;
   SDL_GLContext mContext;
   
+  int mWidth;
+  int mHeight;
+  
   struct FontInfo {
     static const int sCharCount = 96;
     GLuint texture;
-    stbtt_bakedchar chars[sCharCount];
+    float textureSize;
+    stbtt_bakedchar chars [sCharCount];
+  };
+  
+  struct ProgramInfo {
+    GLuint projMatUniform;
+    GLuint samplerUniform;
+    GLuint program;
+    GLuint sampler;
   };
   
   std::unordered_map<std::string, GLuint> mTextures;
-  std::unordered_map<std::string, GLuint> mPrograms;
+  std::unordered_map<std::string, ProgramInfo> mPrograms;
   std::unordered_map<std::string, GLuint> mShaders;
   std::unordered_map<std::string, GLuint> mUniforms;
   std::unordered_map<std::string, FontInfo> mFonts;
+  std::map<int, std::string> mFontsReverse;
   
   GLuint  mCurrentProgram;
   GLuint  mCurrentTexture;

@@ -1,6 +1,8 @@
+#include <GL/glew.h>
+#include <GL/gl.h>
+
 #include <SDL.h>
 //#include <SDL_ttf.h>
-#include <GL/gl.h>
 
 extern "C" {
 #include <lua.h>
@@ -10,6 +12,8 @@ extern "C" {
 
 #include "ui/Button.hpp"
 #include "ui/Screen.hpp"
+//test
+#include "ui/ScreenData.hpp"
 
 int main(int argc, char ** argv) 
 {
@@ -18,8 +22,8 @@ int main(int argc, char ** argv)
   // create the lua state
   lua_State *lua = luaL_newstate();
   
-  Screen gameScreen(800, 600, "PiratesOfOld");
-  std::shared_ptr<Button> button (new Button(200, 200, 100, 100, "Hello World!"));
+  Screen gameScreen(1024, 800, "PiratesOfOld");
+  std::shared_ptr<Button> button (new Button(0, 0, 100, 100, "Hello WoRld"));
   gameScreen.setRoot(button);
   
   

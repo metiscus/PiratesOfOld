@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include <SDL.h>
 #include "Screen.hpp"
 #include "ScreenData.hpp"
@@ -11,19 +12,24 @@ Screen::Screen(int width, int height, std::string title)
   , mTitle(title)
   , mData(new ScreenData)
 {
-  mData->getWindow()   = SDL_CreateWindow(title.c_str(),
-                            SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED,
-                            width, height, 0);
-  
-  mData->getRenderer() = SDL_CreateRenderer(mData->getWindow(), -1, SDL_RENDERER_ACCELERATED);
-  
-  //mData->getFont()     = TTF_OpenFont("DroidSans.ttf", 50);
-  
-  mData->getTexture() = SDL_CreateTexture(mData->getRenderer(),
-                               SDL_PIXELFORMAT_ARGB8888,
-                               SDL_TEXTUREACCESS_STREAMING,
-                               width, height);
+  std::shared_ptr<Renderer> myRenderer(new Renderer(0, 0, width, height, title));
+  mData->getFont() = myRenderer->loadFont("data/DroidSans.ttf");
+  mData->setRenderer(myRenderer);
+
+  GLuint program = myRenderer->createProgram(std::string("default"));
+  GLuint fshader = myRenderer->loadShader(std::string("data/default.frag"), Renderer::Shader_Fragment);
+  GLuint vshader = myRenderer->loadShader(std::string("data/default.vert"), Renderer::Shader_Vertex);
+  myRenderer->compileShader(fshader);
+  myRenderer->compileShader(vshader);
+  myRenderer->addShader(program, fshader);
+  myRenderer->addShader(program, vshader);
+  myRenderer->linkProgram(program);
+  myRenderer->useProgram(program);
+  myRenderer->clearColor( 0.5, 0.5, 0.5, 0.1 );
+  myRenderer->enableBlending();
+  myRenderer->enableTexturing();
+
+  glViewport(0, 0, width, height);
 }
 
 int Screen::getWidth() const
@@ -48,13 +54,13 @@ std::shared_ptr<Window> Screen::getRoot()
 
 void Screen::onDraw(float dt)
 {
-  SDL_RenderClear(mData->getRenderer());
-  SDL_RenderPresent(mData->getRenderer()); 
-  
+  std::shared_ptr<Renderer> renderer = mData->getRenderer();
+  renderer->begin();
+  renderer->clear(true);
   if(mRoot) {
     mRoot->onDraw( dt, mData );
   }
-  
+  renderer->end();
 
   fprintf(stderr, "Dt is %7f\r", dt); 
 }
