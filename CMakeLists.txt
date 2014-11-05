@@ -50,7 +50,7 @@ add_executable(PiratesOfOld
   ui/Renderer.cpp
 )
 
-configure_file(data/default.frag ${CMAKE_CURRENT_BINARY_DIR}/data/default.vert COPYONLY)
+configure_file(data/default.frag ${CMAKE_CURRENT_BINARY_DIR}/data/default.frag COPYONLY)
 configure_file(data/default.vert ${CMAKE_CURRENT_BINARY_DIR}/data/default.vert COPYONLY)
 configure_file(data/DroidSans.ttf ${CMAKE_CURRENT_BINARY_DIR}/data/DroidSans.ttf COPYONLY)
 
