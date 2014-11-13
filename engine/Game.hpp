@@ -16,6 +16,8 @@ class Game
 public:
   void StartGame();
   
+ 
+  
 private:
   std::shared_ptr<GameConfig>     mGameConfig;
   std::shared_ptr<LuaEnvironment> mLuaEnvironment;
