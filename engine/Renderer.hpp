@@ -3,15 +3,16 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
-#include <SDL.h>
+
 #include <map>
 #include <unordered_map>
 #include <string>
 #include <vector>
-#include <valarray>
+#include <memory>
 #include "stb/stb_truetype.h"
 
-//tolua_begin
+#include "Window.hpp"
+
 #pragma pack(push, 1)
 struct Vertex
 {
@@ -56,7 +57,7 @@ public:
     Shader_Fragment
   };
   
-  Renderer(int x, int y, int w, int h, std::string title);
+  Renderer(std::shared_ptr<Window> window);
   ~Renderer();
   
   void enableBlending();
@@ -104,13 +105,8 @@ public:
   void begin();
   void end();
   
-private:
-//tolua_end    
-  SDL_Window* mWindow;
-  SDL_GLContext mContext;
-  
-  int mWidth;
-  int mHeight;
+private: 
+  std::shared_ptr<Window> mWindow;
   
   struct FontInfo {
     static const int sCharCount = 96;
@@ -139,6 +135,6 @@ private:
   bool    mIsDepthTestEnabled;
   bool    mIsTexturingEnabled;
   GLfloat mClearColor[4];
-};//tolua_export
+};
 
 #endif

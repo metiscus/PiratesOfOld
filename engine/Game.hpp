@@ -3,9 +3,13 @@
 
 #include <memory>
 
+#include "Window.hpp"
+
 class GameConfig;
 class LuaEnvironment;
-class EventManager;
+class Renderer;
+class ResourceLoader;
+class Window;
 
 class Game
 {
@@ -15,7 +19,9 @@ public:
 private:
   std::shared_ptr<GameConfig>     mGameConfig;
   std::shared_ptr<LuaEnvironment> mLuaEnvironment;
-  std::shared_ptr<EventManager>   mEventManager;
+  std::shared_ptr<Window>         mGameWindow;
+  std::shared_ptr<Renderer>       mRenderer;
+  std::shared_ptr<ResourceLoader> mResourceLoader;
 };
 
 #endif 

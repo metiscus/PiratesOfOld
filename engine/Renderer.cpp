@@ -20,10 +20,8 @@ static const std::string sProjectionMatrixUniformName = "ProjMat";
 static const std::string sSamplerUniformName          = "Sampler";
 static const std::string sFragmentLocationName        = "fragColor";
 
-Renderer::Renderer(int x, int y, int w, int h, std::string title)
-  : mWindow(nullptr)
-  , mWidth(w)
-  , mHeight(h)  
+Renderer::Renderer(std::shared_ptr<Window> window)
+  : mWindow(window)
   , mCurrentProgram(0)
   , mCurrentTexture(0)
   , mIsBlendingEnabled(false)
@@ -32,30 +30,6 @@ Renderer::Renderer(int x, int y, int w, int h, std::string title)
 {
   fprintf(stderr, "renderer created %p\n", this);
   mClearColor[0] = mClearColor[1] = mClearColor[2] = mClearColor[3] = 0.f;
-  
-  mWindow = SDL_CreateWindow( title.c_str(), x, y, w, h, SDL_WINDOW_OPENGL );
-  if(!mWindow)
-  {
-    printf("Failed to create a window.\n");
-    exit(1);
-  }
-  
-  mContext = SDL_GL_CreateContext(mWindow);
-  SDL_GL_MakeCurrent(mWindow, mContext);
-  SDL_GL_MakeCurrent(mWindow, mContext);
-  SDL_GL_SwapWindow(mWindow);
-
-  glewExperimental = GL_TRUE;
-  if(glewInit() != GLEW_OK)
-  {
-    printf("Failed to initialize GLEW.\n");
-  }
-  
-  /*
-  glEnable(GL_POINT_SMOOTH);
-  glEnable(GL_POINT_SPRITE);
-  glTexEnvf(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
-  */
 }
 
 Renderer::~Renderer()
@@ -286,6 +260,9 @@ GLuint Renderer::createProgram(std::string name)
 
 void Renderer::useProgram(GLuint program)
 {
+  float mWidth = mWindow->GetWidth();
+  float mHeight = mWindow->GetHeight();
+  
   if(mCurrentProgram != program)
   {
     mCurrentProgram = program;
@@ -544,7 +521,7 @@ void Renderer::drawText(GLuint font, const Vertex& start, const std::string& tex
 
 void Renderer::begin()
 {
-  SDL_GL_MakeCurrent(mWindow, mContext);
+  mWindow->MakeCurrent();
   glEnableVertexAttribArray(0);
   glEnableVertexAttribArray(2);
   glEnableVertexAttribArray(3);
@@ -552,7 +529,7 @@ void Renderer::begin()
 
 void Renderer::end()
 {
-  SDL_GL_SwapWindow(mWindow);
+  mWindow->Swap();
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(2);
   glDisableVertexAttribArray(3);

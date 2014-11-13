@@ -35,6 +35,13 @@ include_directories(glm)
 
 add_executable(PiratesOfOld 
   main.cpp
+  engine/Game.cpp
+  engine/LuaEnvironment.cpp
+  engine/Window.cpp
+  engine/Renderer.cpp
+  engine/ResourceLoader.cpp
+  engine/stb/stb_truetype.cpp
+  engine/stb/stb_image.cpp
   gameplay/Pirate.cpp
   gameplay/Date.cpp
   gameplay/Territory.cpp
@@ -42,17 +49,14 @@ add_executable(PiratesOfOld
   gameplay/GameWorld.cpp
   gameplay/Map.cpp
   gameplay/Ship.cpp
-  ui/stb/stb_truetype.cpp
-  ui/stb/stb_image.cpp
-  ui/Screen.cpp
-  ui/Window.cpp
-  ui/Button.cpp
-  ui/Renderer.cpp
+#  ui/Screen.cpp
+#  ui/Button.cpp
 )
 
 configure_file(data/default.frag ${CMAKE_CURRENT_BINARY_DIR}/data/default.frag COPYONLY)
 configure_file(data/default.vert ${CMAKE_CURRENT_BINARY_DIR}/data/default.vert COPYONLY)
 configure_file(data/DroidSans.ttf ${CMAKE_CURRENT_BINARY_DIR}/data/DroidSans.ttf COPYONLY)
+configure_file(data/scripts/main.lua ${CMAKE_CURRENT_BINARY_DIR}/data/scripts/main.lua COPYONLY)
 
 ## This requires sdl2_ttf library from https://www.libsdl.org/projects/SDL_ttf/
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSDL2_ttf -lGLEW")
