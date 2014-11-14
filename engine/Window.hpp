@@ -21,6 +21,8 @@ public:
   void MakeCurrent();
   void PumpEvents();
   
+  std::shared_ptr<EventManager> GetEventManager();
+  
 private:
   const Window& operator=(const Window& rhs) = delete;
   Window(const Window& rhs) = delete;

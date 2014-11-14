@@ -7,21 +7,19 @@ class Window;
 #include <map>
 #include <memory>
 
-class ScreenData;
-
 class Screen
 {
 public:
   Screen();
-  Screen(const Screen& rhs) = delete;
-  const Screen& operator=(const Screen&) = delete;
-
-  void onDraw(float dt);
-  void onClick(int x, int y, int button);
-  void onKeypress(int key);
-
-private:
+  ~Screen() = delete;
   
+  void SetWindow(std::shared_ptr<Window> window);
+  
+private:
+  Screen(const Screen& rhs) = delete;
+  const Screen& operator=(const Screen&) = delete; 
+  
+  std::shared_ptr<Window> mWindow;
 };
 
 #endif

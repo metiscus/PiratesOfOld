@@ -37,6 +37,13 @@ set(ANGELSCRIPT_SOURCE
         ../../source/as_tokenizer.cpp
         ../../source/as_typeinfo.cpp
         ../../source/as_variablescope.cpp
+        ../../../add_on/scriptarray/scriptarray.cpp
+        ../../../add_on/scriptbuilder/scriptbuilder.cpp
+        ../../../add_on/scriptany/scriptany.cpp
+        ../../../add_on/scripthandle/scripthandle.cpp
+        ../../../add_on/scripthelper/scripthelper.cpp
+        ../../../add_on/scriptstdstring/scriptstdstring.cpp
+        ../../../add_on/scriptstdstring/scriptstdstring_utils.cpp
 )
 
 if(MSVC AND CMAKE_CL_64)
@@ -115,5 +122,6 @@ endif(MSVC)
 
 set(RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/../../bin)
 
-add_subdirectory(../../../samples/game/projects/cmake/ ./game)
+#
+#add_subdirectory(../../../samples/game/projects/cmake/ ./game)
 

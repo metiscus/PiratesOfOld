@@ -1,17 +1,16 @@
 #include <SDL.h>
 
 #include "Button.hpp"
-#include "ScreenData.hpp"
+
 
 Button::Button(int x, int y, int width, int height, const std::string& text )
-  : Window( x, y, width, height )
   , mText(text)
   , mIsPressed(false)
 {
   ;
 }
 
-void Button::onDraw( float dt, std::shared_ptr<ScreenData> data )
+void Button::onDraw(  )
 {
   // draw back of button
   QuadInfo quad;

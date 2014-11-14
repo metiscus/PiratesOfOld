@@ -69,33 +69,38 @@ void Window::PumpEvents()
     {
       case SDL_KEYDOWN:
       {
-	mEventManager->OnKeyDown(event.key.keysym.sym);
-	break;
+        mEventManager->OnKeyDown(event.key.keysym.sym);
+        break;
       }
       
       case SDL_KEYUP:
       {
-	mEventManager->OnKeyUp(event.key.keysym.sym);
-	break;
+        mEventManager->OnKeyUp(event.key.keysym.sym);
+        break;
       }
       
       case SDL_MOUSEMOTION:
       {
-	mEventManager->OnMouseMove(event.motion.x, event.motion.y);
-	break;
+        mEventManager->OnMouseMove(event.motion.x, event.motion.y);
+        break;
       }
       
       case SDL_MOUSEBUTTONDOWN:
       {
-	mEventManager->OnMouseButtonDown(event.button.button);
-	break;
+        mEventManager->OnMouseButtonDown(event.button.button);
+        break;
       }
       
       case SDL_MOUSEBUTTONUP:
       {
-	mEventManager->OnMouseButtonUp(event.button.button);
-	break;
+        mEventManager->OnMouseButtonUp(event.button.button);
+        break;
       }      
     }
   }
+}
+
+std::shared_ptr<EventManager> Window::GetEventManager()
+{
+  return mEventManager;
 }
