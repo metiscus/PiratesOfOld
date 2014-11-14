@@ -19,6 +19,7 @@ public:
   
   void Swap();
   void MakeCurrent();
+  void PumpEvents();
   
 private:
   const Window& operator=(const Window& rhs) = delete;

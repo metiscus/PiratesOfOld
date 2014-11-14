@@ -36,7 +36,19 @@ Renderer::~Renderer()
 {
   //\TODO: Write deinitialization code here
 }
- 
+
+void Renderer::RegisterMethods(ScriptEnvironment& env)
+{
+  env.RegisterMemberFunction<Renderer>("Renderer", "void enableBlending()", asMETHOD(Renderer, enableBlending));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void disableBlending()", asMETHOD(Renderer, disableBlending));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void enableDepthTest()", asMETHOD(Renderer, enableDepthTest));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void disableDepthTest()", asMETHOD(Renderer, disableDepthTest));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void enableTexturing()", asMETHOD(Renderer, enableTexturing));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void disableTexturing()", asMETHOD(Renderer, disableTexturing));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void clear(bool depth)", asMETHOD(Renderer, clear));
+  env.RegisterMemberFunction<Renderer>("Renderer", "void clearColor(float r, float g, float b, float a)", asMETHOD(Renderer, clearColor));
+}
+
 void Renderer::enableBlending()
 {
   if(!mIsBlendingEnabled){
@@ -96,7 +108,7 @@ void Renderer::clear(bool depth)
   }
 }
 
-void Renderer::clearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a)
+void Renderer::clearColor(float r, float g, float b, float a)
 {
   glClearColor(r, g, b, a);
 }
@@ -488,7 +500,7 @@ void Renderer::drawText(GLuint font, const Vertex& start, const std::string& tex
   cursor.y += 8;
   std::vector<QuadInfo> textQuads;
   
-  for(int ii=0; ii<text.length(); ++ii)
+  for(uint32_t ii=0; ii<text.length(); ++ii)
   {
     QuadInfo letter;
 

@@ -11,6 +11,7 @@
 #include <memory>
 #include "stb/stb_truetype.h"
 
+#include "ScriptEnvironment.hpp"
 #include "Window.hpp"
 
 #pragma pack(push, 1)
@@ -49,7 +50,7 @@ struct QuadInfo
 };
 #pragma pack(pop)
 
-class Renderer
+class Renderer : public Scriptable
 {
 public:
   enum ShaderType {
@@ -58,7 +59,10 @@ public:
   };
   
   Renderer(std::shared_ptr<Window> window);
-  ~Renderer();
+  virtual ~Renderer();
+    
+  static void RegisterMethods(ScriptEnvironment& env);
+  //virtual void UnregisterMethods(ScriptEnvironment& env);
   
   void enableBlending();
   void disableBlending();
@@ -67,7 +71,7 @@ public:
   void enableTexturing();
   void disableTexturing();
   void clear(bool depth);
-  void clearColor(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
+  void clearColor(float r, float g, float b, float a);
     
   // texture functions
   GLuint loadTexture(std::string filename);

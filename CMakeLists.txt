@@ -21,6 +21,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lua-5.2.3/src)
 
 add_subdirectory(lua-5.2.3)
+add_subdirectory(angelscript-2.29.2/sdk/angelscript/projects/cmake)
 
 # Find SDL2
 find_package(SDL2 REQUIRED)
@@ -32,11 +33,15 @@ add_definitions("-Wall -Wextra")
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${GLEW_INCLUDE_PATH})
 include_directories(glm)
+include_directories(angelscript-2.29.2/sdk/angelscript/include)
+include_directories(angelscript-2.29.2/sdk)
 
 add_executable(PiratesOfOld 
   main.cpp
   engine/Game.cpp
-  engine/LuaEnvironment.cpp
+  engine/ScriptEnvironment.cpp
+  engine/EventManager.cpp
+  engine/EventListener.cpp
   engine/Window.cpp
   engine/Renderer.cpp
   engine/ResourceLoader.cpp
@@ -59,6 +64,6 @@ configure_file(data/DroidSans.ttf ${CMAKE_CURRENT_BINARY_DIR}/data/DroidSans.ttf
 configure_file(data/scripts/main.lua ${CMAKE_CURRENT_BINARY_DIR}/data/scripts/main.lua COPYONLY)
 
 ## This requires sdl2_ttf library from https://www.libsdl.org/projects/SDL_ttf/
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lSDL2_ttf -lGLEW")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lGLEW")
 
-target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} lua)
+target_link_libraries(PiratesOfOld ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} lua Angelscript)

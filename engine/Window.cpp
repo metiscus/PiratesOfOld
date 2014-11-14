@@ -59,3 +59,43 @@ void Window::MakeCurrent()
   assert(mContext);
   SDL_GL_MakeCurrent(mWindow, *mContext);
 }
+
+void Window::PumpEvents()
+{
+  SDL_Event event;
+  if( SDL_PollEvent( &event ) > 0 )
+  {
+    switch(event.type)
+    {
+      case SDL_KEYDOWN:
+      {
+	mEventManager->OnKeyDown(event.key.keysym.sym);
+	break;
+      }
+      
+      case SDL_KEYUP:
+      {
+	mEventManager->OnKeyUp(event.key.keysym.sym);
+	break;
+      }
+      
+      case SDL_MOUSEMOTION:
+      {
+	mEventManager->OnMouseMove(event.motion.x, event.motion.y);
+	break;
+      }
+      
+      case SDL_MOUSEBUTTONDOWN:
+      {
+	mEventManager->OnMouseButtonDown(event.button.button);
+	break;
+      }
+      
+      case SDL_MOUSEBUTTONUP:
+      {
+	mEventManager->OnMouseButtonUp(event.button.button);
+	break;
+      }      
+    }
+  }
+}
