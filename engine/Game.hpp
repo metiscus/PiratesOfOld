@@ -10,6 +10,7 @@ class ScriptEnvironment;
 class Renderer;
 class ResourceLoader;
 class Window;
+class ScreenManager;
 
 class Game
 {
@@ -17,11 +18,12 @@ public:
   void StartGame();
   
 private:
-  std::shared_ptr<GameConfig>     mGameConfig;
+  std::shared_ptr<GameConfig>        mGameConfig;
   std::shared_ptr<ScriptEnvironment> mScriptEnvironment;
-  std::shared_ptr<Window>         mGameWindow;
-  std::shared_ptr<Renderer>       mRenderer;
-  std::shared_ptr<ResourceLoader> mResourceLoader;
+  std::shared_ptr<Window>            mGameWindow;
+  std::shared_ptr<Renderer>          mRenderer;
+  std::shared_ptr<ResourceLoader>    mResourceLoader;
+  std::shared_ptr<ScreenManager>     mScreenManager;
 };
 
 #endif 

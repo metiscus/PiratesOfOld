@@ -1,11 +1,9 @@
 #include <GL/glew.h>
 #include <SDL.h>
 #include "Screen.hpp"
-#include "ScreenData.hpp"
-#include "Window.hpp"
 
 #include <cstdio>
-
+/*
 Screen::Screen(int width, int height, std::string title)
   : mWidth(width)
   , mHeight(height)
@@ -78,3 +76,4 @@ void Screen::onKeypress(int key)
     mRoot->onKeypress(key);
   }
 }
+*/

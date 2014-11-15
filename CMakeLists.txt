@@ -38,13 +38,17 @@ include_directories(angelscript-2.29.2/sdk)
 
 add_executable(PiratesOfOld 
   main.cpp
-  engine/Game.cpp
-  engine/ScriptEnvironment.cpp
-  engine/EventManager.cpp
   engine/EventListener.cpp
-  engine/Window.cpp
+  engine/EventManager.cpp
+  engine/Game.cpp
   engine/Renderer.cpp
   engine/ResourceLoader.cpp
+  engine/Screen.cpp
+  engine/ScreenElement.cpp
+  engine/ScreenManager.cpp
+  engine/Scriptable.cpp
+  engine/ScriptEnvironment.cpp
+  engine/Window.cpp
   engine/stb/stb_truetype.cpp
   engine/stb/stb_image.cpp
   gameplay/Pirate.cpp
@@ -54,8 +58,6 @@ add_executable(PiratesOfOld
   gameplay/GameWorld.cpp
   gameplay/Map.cpp
   gameplay/Ship.cpp
-#  ui/Screen.cpp
-#  ui/Button.cpp
 )
 
 configure_file(data/default.frag ${CMAKE_CURRENT_BINARY_DIR}/data/default.frag COPYONLY)

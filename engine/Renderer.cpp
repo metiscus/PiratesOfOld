@@ -541,7 +541,7 @@ void Renderer::begin()
 
 void Renderer::end()
 {
-  mWindow->Swap();
+  mWindow->SwapBuffers();
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(2);
   glDisableVertexAttribArray(3);

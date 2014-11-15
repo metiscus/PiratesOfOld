@@ -3,14 +3,18 @@
 
 #include "Renderer.hpp"
 
+#include <memory>
+
+//! \brief Interface for objects that draw to the screen
 class Drawable
 {
 public:
-  Drawable();
+  Drawable() = default;
   Drawable(const Drawable& rhs) = delete;
-  virtual ~Drawable() = delete;
+  virtual ~Drawable() = default;
   
-  virtual void OnDraw() = 0; 
+  virtual void OnCreate(std::shared_ptr<Renderer> renderer) = 0;
+  virtual void OnDraw(std::shared_ptr<Renderer> renderer) = 0; 
 };
 
 #endif

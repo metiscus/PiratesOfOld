@@ -5,15 +5,13 @@
 #include "Renderer.hpp"
 #include "ResourceLoader.hpp"
 #include "Window.hpp"
+#include "ScreenManager.hpp"
 
 // hax
 #include <unistd.h>
 
 void Game::StartGame()
 {
-  SDL_Init(SDL_INIT_EVERYTHING);
-  SDL_GL_SetSwapInterval(1);
-  
   mGameWindow.reset(new Window(1024, 768, "PiratesOfOld"));
   mRenderer.reset(new Renderer(mGameWindow));
   mScriptEnvironment.reset(new ScriptEnvironment());
@@ -25,6 +23,10 @@ void Game::StartGame()
   mScriptEnvironment->LoadScript(mainScript);
   mScriptEnvironment->RegisterClass<Renderer>("Renderer");
   
+  // create the screen manager
+  mScreenManager.reset(new ScreenManager(mGameWindow));
+  mScriptEnvironment->RegisterClass<ScreenManager>("ScreenManager");
+  
   bool isRunning = true;
   
   while(isRunning)
@@ -35,7 +37,7 @@ void Game::StartGame()
 //    mScriptEnvironment->Call("OnFrame");
 //    mScriptEnvironment->Call("OnPostFrame");
     
-    mGameWindow->Swap();
+    mGameWindow->SwapBuffers();
     usleep(10000);
   }
 }

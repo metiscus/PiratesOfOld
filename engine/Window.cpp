@@ -7,14 +7,23 @@
 #include "EventManager.hpp"
 #include "Window.hpp"
 
-Window::Window(int w, int h, std::string title)
+std::once_flag Window::sWindowSystemInit;
+
+Window::Window(int width, int height, std::string title)
   : mWindow(nullptr)
   , mContext(nullptr)
+  , mWidth(width)
+  , mHeight(height)
   , mEventManager(new EventManager())
-  , mWidth(w)
-  , mHeight(h)
 {
-  mWindow = SDL_CreateWindow( title.c_str(), 0, 0, w, h, SDL_WINDOW_OPENGL );
+  // Initialize the windowing system
+  std::call_once(sWindowSystemInit, []{
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_GL_SetSwapInterval(1);  
+  });
+  
+  // create the SDL window
+  mWindow = SDL_CreateWindow(title.c_str(), 0, 0, mWidth, mHeight, SDL_WINDOW_OPENGL);
   if(!mWindow)
   {
     printf("Failed to create a window.\n");
@@ -25,6 +34,7 @@ Window::Window(int w, int h, std::string title)
   *mContext = SDL_GL_CreateContext(mWindow);
   SDL_GL_MakeCurrent(mWindow, *mContext);
 
+  // initialize glew
   glewExperimental = GL_TRUE;
   if(glewInit() != GLEW_OK)
   {
@@ -47,7 +57,7 @@ uint32_t Window::GetHeight() const
   return mWidth;
 }
 
-void Window::Swap()
+void Window::SwapBuffers()
 {
   assert(mWindow);
   SDL_GL_SwapWindow(mWindow);
