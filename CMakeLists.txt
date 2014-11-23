@@ -58,6 +58,11 @@ add_executable(PiratesOfOld
   gameplay/GameWorld.cpp
   gameplay/Map.cpp
   gameplay/Ship.cpp
+  engine/Model.cpp
+  engine/Controller.cpp
+  src/WorldMapModel.cpp
+  src/WorldMapView.cpp
+  src/WorldMapController.cpp
 )
 
 configure_file(data/default.frag ${CMAKE_CURRENT_BINARY_DIR}/data/default.frag COPYONLY)
